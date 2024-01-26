@@ -18,7 +18,6 @@ router.post("/verificaUsuario", (req, res) => {
       }
     })
     .catch((error) => {
-      console.error(error);
       res.status(500).send("Erro interno do servidor");
     });
 });
@@ -148,7 +147,7 @@ router.put("/teacherPerfil", async (req, res) => {
       firstName,
       lastName,
       photo,
-      idStudent
+      idTeacher
     ],
     (err, result) => {
       if (err) {

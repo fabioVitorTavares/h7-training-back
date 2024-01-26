@@ -29,7 +29,7 @@ app.use("/pdf", pdfRoutes);
 app.use("/upload", uploadRoutes);
 
 
-app.use('/media', express.static('./uploads'));
+app.use('/media', express.static(__dirname + '/media'));
 
 app.listen(port, () => {
   console.log(`Servidor está ouvindo na porta ${port}`);

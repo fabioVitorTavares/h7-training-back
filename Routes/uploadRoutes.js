@@ -3,41 +3,27 @@ const path = require('path');
 const multer = require('multer');
 const router = express.Router();
 const { createConnection } = require("../config/config");
+const cliente = createConnection();
 
-const uploadDir = './uploads';
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const fileExtension = path.extname(file.originalname);
-    const newFileName = `${timestamp}${fileExtension}`;
-    cb(null, newFileName);
+  destination: "./media/",
+  filename: function (req, file, cb) {
+    cb(null,  file.originalname);
   },
 });
 
-const upload = multer({ storage: storage });
-router.post('/photo', upload.single('file'), (req, res) => {
-  const file = req.file;
-  const { email, isTeacher } = req.body;
-  const table = isTeacher ? "teacher" : "student";
-  console.log('veja', file)
+const diskStorage = multer({ storage: storage });
+
+router.post("/photo", diskStorage.single("file"), async (req, res) => {
   try {
-  const query = `UPDATE ${table} set photo = $1 WHERE email = $2`;
-  const cliente = createConnection();
-
-  res.status(200).json({message: "sucesso"});
-    
+    const { originalname } = req.file;
+    const { userId, typeUser } = req.body;
+    const query = `UPDATE ${typeUser} set photo = $1 WHERE id = $2`;
+    const result = await cliente.query(query, [originalname, userId]);
+    res.status(201).json({ message: "Imagem alterada com sucesso!" });
   } catch (error) {
-    res.status(500).send("Erro interno do servidor");
-    
+    res.status(500).send("Error");
   }
-
-  res.json({ message: 'Arquivo recebido e salvo com sucesso' });
 });
-
-
-
 
 module.exports = router;
